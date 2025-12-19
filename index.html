@@ -1,1 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lionel Muench - Design portfolio showcasing explorations in form, space, and material.">
+    <title>Fundamentals of Design | Lionel Muench</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/sections.css">
+
+    <style>
+        /* Image gallery grid layouts */
+        .image-gallery {
+            display: grid;
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .image-gallery--3col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .image-gallery--2col {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .image-gallery--1col {
+            grid-template-columns: 1fr;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .gallery-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-3);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-md);
+        }
+
+        .gallery-item--bordered {
+            background-color: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+        }
+
+        .gallery-item img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            /* Smooth edges for transparent PNGs */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        /* Large gallery images */
+        .gallery-item--large img {
+            max-height: 450px;
+        }
+
+        /* Medium gallery images */
+        .gallery-item--medium img {
+            max-height: 300px;
+        }
+
+        /* Small gallery images */
+        .gallery-item--small img {
+            max-height: 200px;
+        }
+
+        /* Image Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background-color: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-8);
+            cursor: zoom-out;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal__content {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* White background for transparent images in modal */
+        .modal__content.transparent-bg {
+            background-color: white;
+            padding: 20px;
+        }
+
+        .modal__close {
+            position: absolute;
+            top: var(--space-6);
+            right: var(--space-6);
+            width: 48px;
+            height: 48px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color var(--transition-fast);
+        }
+
+        .modal__close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Firefox compatibility */
+        @-moz-document url-prefix() {
+            .hero__shape {
+                opacity: 0.3;
+            }
+        }
+
+        /* Cross-browser transforms */
+        .hero__shape,
+        .gallery-item {
+            -webkit-transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            -moz-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        @media (max-width: 768px) {
+
+            .image-gallery--3col,
+            .image-gallery--2col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+        <div class="container nav__inner">
+            <a href="#" class="nav__logo">Lionel Muench</a>
+
+            <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <ul class="nav__links">
+                <li><a href="#projects" class="nav__link">Projects</a></li>
+                <li><a href="#volumes" class="nav__link">01</a></li>
+                <li><a href="#planar" class="nav__link">02</a></li>
+                <li><a href="#lines" class="nav__link">03</a></li>
+                <li><a href="#convexity" class="nav__link">04</a></li>
+                <li><a href="#final" class="nav__link">Final</a></li>
+                <li><a href="#about" class="nav__link">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero__background">
+            <div class="hero__shape hero__shape--1" data-parallax="0.3"></div>
+            <div class="hero__shape hero__shape--2" data-parallax="0.5"></div>
+            <div class="hero__shape hero__shape--3" data-parallax="0.2"></div>
+            <div class="hero__shape hero__shape--4" data-parallax="0.4"></div>
+        </div>
+
+        <div class="hero__content">
+            <p class="hero__eyebrow">ARST270 Fall '25</p>
+            <h1 class="hero__title">
+                <span>Fundamentals</span>
+                <span class="text-gradient">of Design</span>
+            </h1>
+            <p class="hero__subtitle">Explorations of Space, Material, and Interaction. Click on images to expand.</p>
+        </div>
+
+        <div class="scroll-indicator">
+            <div class="scroll-indicator__mouse">
+                <div class="scroll-indicator__wheel"></div>
+            </div>
+            <span>Scroll</span>
+        </div>
+    </section>
+
+    <!-- Projects Overview -->
+    <section class="projects-overview" id="projects">
+        <div class="container">
+            <header class="projects-overview__header reveal">
+                <h2 class="projects-overview__title">Projects</h2>
+            </header>
+        </div>
+    </section>
+
+    <!-- Project 01: Rectilinear & Curvilinear Volumes -->
+    <section class="project-section" id="volumes">
+        <div class="container">
+            <div class="project-section__inner">
+                <div class="project-section__content reveal-left">
+                    <span class="project-section__number">01</span>
+                    <p class="project-section__eyebrow">"Overhead"</p>
+                    <h2 class="project-section__title">Rectilinear & Curvilinear</h2>
+                    <p class="project-section__description">
+                        In these studies, I learned how to create balance between shapes by simplifying forms into
+                        dominant, subdominant, and subordinate forms. We created small sculptures and modeled them in
+                        Rhino.
+                    </p>
+                </div>
+
+                <!-- 2x2 Grid: Rect+Curv on top, Mixed+Rhino on bottom -->
+                <div class="reveal-right">
+                    <div class="image-gallery image-gallery--2col">
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Rectilinear & curvilinear/Rectilinear Model.png"
+                                alt="Rectilinear model sculpture">
+                        </div>
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Rectilinear & curvilinear/Curvilinear Model.png"
+                                alt="Curvilinear model sculpture">
+                        </div>
+                    </div>
+                    <div class="image-gallery image-gallery--2col">
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Rectilinear & curvilinear/Mixed Model.png"
+                                alt="Mixed rectilinear and curvilinear model">
+                        </div>
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Rectilinear & curvilinear/RectCurveRhinomodel.png"
+                                alt="Rhino 3D model">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project 02: Planar Construction -->
+    <section class="project-section" id="planar">
+        <div class="container">
+            <div class="project-section__inner">
+                <div class="project-section__content reveal-left">
+                    <span class="project-section__number">02</span>
+                    <p class="project-section__eyebrow">"Prism"</p>
+                    <h2 class="project-section__title">Planar</h2>
+                    <p class="project-section__description">
+                        In this study of planar materials, we learned to work with bends and folds to put 2-dimensional
+                        shapes into 3 dimensions. My group learned about material strength, and using alternative
+                        methods of holding besides glue and tape. We applied lessons of hierarchy from our previous
+                        projects to create a visually appealing model.
+                    </p>
+                </div>
+
+                <div class="reveal-right">
+                    <!-- Top: 3 smaller pics -->
+                    <div class="image-gallery image-gallery--3col">
+                        <div class="gallery-item gallery-item--medium" data-transparent="true">
+                            <img src="assets/images/Planar/Planar Sketch Model.png" alt="Planar sketch model">
+                        </div>
+                        <div class="gallery-item gallery-item--medium gallery-item--bordered">
+                            <img src="assets/images/Planar/First Prototype NOT.png" alt="First prototype">
+                        </div>
+                        <div class="gallery-item gallery-item--medium" data-transparent="true">
+                            <img src="assets/images/Planar/Second Prototype.png" alt="Second prototype">
+                        </div>
+                    </div>
+                    <!-- Bottom: Final model -->
+                    <div class="image-gallery image-gallery--1col">
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Planar/Final Planar.png" alt="Final planar model">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project 03: Lines in Space -->
+    <section class="project-section" id="lines">
+        <div class="container">
+            <div class="project-section__inner">
+                <div class="project-section__content reveal-left">
+                    <span class="project-section__number">03</span>
+                    <p class="project-section__eyebrow">"Whistle"</p>
+                    <h2 class="project-section__title">Lines in Space</h2>
+                    <p class="project-section__description">
+                        Here, we learned how about how curves take up space and the relationship between multiple
+                        curves. My final project was inspired by the path of an untied balloon taking flight when
+                        released. I applied my knowledge of material strength from the planar project; I experimented
+                        with doubling and tripling wire until the lines had the weight and strength I wanted them to.
+                    </p>
+                </div>
+
+                <div class="reveal-right">
+                    <!-- Top: 3 smaller images -->
+                    <div class="image-gallery image-gallery--3col">
+                        <div class="gallery-item gallery-item--medium" data-transparent="true">
+                            <img src="assets/images/Lines in Space/grid of rhino line in space.png"
+                                alt="Rhino grid model">
+                        </div>
+                        <div class="gallery-item gallery-item--medium gallery-item--bordered">
+                            <img src="assets/images/Lines in Space/Line Drawings NOT.png" alt="Line drawings">
+                        </div>
+                        <div class="gallery-item gallery-item--medium gallery-item--bordered">
+                            <img src="assets/images/Lines in Space/Wire Lines on Board NOT.png"
+                                alt="Wire lines on board">
+                        </div>
+                    </div>
+                    <!-- Bottom: Final model -->
+                    <div class="image-gallery image-gallery--1col">
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Lines in Space/Final Line Model.png" alt="Final wire line model">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project 04: Concavity/Convexity -->
+    <section class="project-section" id="convexity">
+        <div class="container">
+            <div class="project-section__inner">
+                <div class="project-section__content reveal-left">
+                    <span class="project-section__number">04</span>
+                    <p class="project-section__eyebrow">"Encore"</p>
+                    <h2 class="project-section__title">Concavity & Convexity</h2>
+                    <p class="project-section__description">
+                        In this project, I learned to project top and side views onto a 3-dimensional shape and envision
+                        how a top and side cut would turn into a complex shape. My shape was inspired by a performer
+                        with hands in the air, hence the title of "Encore". I also improved my skills in woodworking.
+                    </p>
+                </div>
+
+                <div class="reveal-right">
+                    <!-- Top: Rhino 3D Model + Top/Side View -->
+                    <div class="image-gallery image-gallery--2col">
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Concavity:convexity/3D Model.png" alt="3D Rhino model">
+                        </div>
+                        <div class="gallery-item gallery-item--large gallery-item--bordered">
+                            <img src="assets/images/Concavity:convexity/Top And Side VIew.png"
+                                alt="Top and side view drawings">
+                        </div>
+                    </div>
+                    <!-- Bottom: Final physical models -->
+                    <div class="image-gallery image-gallery--2col">
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Concavity:convexity/Finalconvex1.png" alt="Final wood model view 1">
+                        </div>
+                        <div class="gallery-item gallery-item--large" data-transparent="true">
+                            <img src="assets/images/Concavity:convexity/Finalconvex2.png" alt="Final wood model view 2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project 05: Final Project - Tymbal -->
+    <section class="featured-project" id="final">
+        <div class="container">
+            <header class="featured-project__header reveal">
+                <span class="featured-project__badge">Final Project</span>
+                <h2 class="featured-project__title">"Tymbal"</h2>
+                <p class="featured-project__subtitle" style="text-align: center;">
+                    These devices, inspired by the cicada, aim to make sound through buckling.
+                </p>
+            </header>
+
+            <div class="reveal">
+                <!-- Top row: Cicada diagram + Prototype (smaller, no border on tymbal) -->
+                <div class="image-gallery image-gallery--2col" style="margin-bottom: var(--space-6);">
+                    <div class="gallery-item gallery-item--medium">
+                        <img src="assets/images/Final/TymbalDiagram (Inspiration).png"
+                            alt="Cicada tymbal inspiration diagram">
+                    </div>
+                    <div class="gallery-item gallery-item--medium" data-transparent="true">
+                        <img src="assets/images/Final/Finalproject prototype.png" alt="Tymbal prototype">
+                    </div>
+                </div>
+
+                <!-- Bottom: Final model centered -->
+                <div class="image-gallery image-gallery--1col">
+                    <div class="gallery-item gallery-item--large" data-transparent="true">
+                        <img src="assets/images/Final/Finalproject Final model.png" alt="Final Tymbal model"
+                            style="max-height: 500px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional images row -->
+            <div class="image-gallery image-gallery--2col reveal" style="margin-top: var(--space-6);">
+                <div class="gallery-item gallery-item--medium" data-transparent="true">
+                    <img src="assets/images/Final/FinalModelExplodedAxonometric.png" alt="Exploded axonometric view">
+                </div>
+                <div class="gallery-item gallery-item--medium" data-transparent="true">
+                    <img src="assets/images/Final/FinalmodelOrthographics.png" alt="Orthographic views">
+                </div>
+            </div>
+
+            <!-- Only 2 detail boxes: Concept and Process -->
+            <div class="featured-project__details reveal stagger-children"
+                style="margin-top: var(--space-12); display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8);">
+                <div class="featured-project__detail">
+                    <h3 class="featured-project__detail-title">Concept</h3>
+                    <p>
+                        I was inspired by the sequential buckling of a cicada's ribs to create noise, as well as the
+                        sequential noise-making of a grager. I was also moved by the steel drum's use of alternative
+                        materials, bringing me to use a tape measure.
+                    </p>
+                </div>
+
+                <div class="featured-project__detail">
+                    <h3 class="featured-project__detail-title">Process</h3>
+                    <p>
+                        I first created a simple mechanism as a proof-of-concept for the tape measure's ability to
+                        create noise. After this, I studied mechanisms that turn rotational force to sequential or
+                        linear force, bringing me to use cams to sequentially buckle each tape measure. From here, I
+                        tweaked the length of the cams, the shape of the device's body, and the handle design for better
+                        user experience.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="about-section__inner">
+                <div class="about-section__image reveal-left">
+                    <img src="assets/Portrait.jpg" alt="Lionel Muench"
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-xl); min-height: 400px;">
+                </div>
+
+                <div class="about-section__content reveal-right">
+                    <p class="about-section__eyebrow">About</p>
+                    <h2 class="about-section__title">Lionel Muench</h2>
+                    <div class="about-section__text">
+                        <p>
+                            I am a sophomore at Wesleyan University studying economics and design. I'm interested in web
+                            design and automation, and hope to use my skills in this class to create devices that
+                            integrate with technology to make life easier.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Modal -->
+    <div class="modal" id="imageModal">
+        <button class="modal__close" aria-label="Close modal">&times;</button>
+        <img class="modal__content" id="modalImage" src="" alt="">
+    </div>
+
+    <!-- JavaScript -->
+    <script type="module" src="js/main.js"></script>
+
+    <!-- Image Modal Script -->
+    <script>
+        // Image Modal Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const closeBtn = modal.querySelector('.modal__close');
+
+            // Add click listeners to all gallery images
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                const img = item.querySelector('img');
+                if (!img) return;
+
+                img.style.cursor = 'zoom-in';
+                img.addEventListener('click', function () {
+                    modal.classList.add('active');
+                    modalImg.src = this.src;
+                    modalImg.alt = this.alt;
+
+                    // Add white background for transparent images
+                    if (item.hasAttribute('data-transparent')) {
+                        modalImg.classList.add('transparent-bg');
+                    } else {
+                        modalImg.classList.remove('transparent-bg');
+                    }
+
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Close modal on close button click
+            closeBtn.addEventListener('click', function () {
+                modal.classList.remove('active');
+                modalImg.classList.remove('transparent-bg');
+                document.body.style.overflow = '';
+            });
+
+            // Close modal on backdrop click
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    modalImg.classList.remove('transparent-bg');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                    modalImg.classList.remove('transparent-bg');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
